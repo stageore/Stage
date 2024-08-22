@@ -4,8 +4,8 @@
 #elif defined(ESP32) || defined(RASPBERRYPI_PICO) || defined(RASPBERRYPI_PICO_W)
 #include <WiFi.h>
 #endif
-#include "attributes_led_tb.h"
-#include "settings_led_tb.h"
+#include "led_attributes_tb.h"
+#include "led_settings_tb.h"
 #include <Arduino_MQTT_Client.h>
 #include <ThingsBoard.h>
 
