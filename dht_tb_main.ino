@@ -1,7 +1,7 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include "settings.h"
-#include "sensors.h"
+#include "dht_settings_tb.h"
+#include "dht_sensors_tb.h"
 
 WiFiClient espClient;
 PubSubClient client(espClient);
