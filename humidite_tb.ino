@@ -11,7 +11,7 @@ const char* mqtt_server = "192.168.1.174";
 const char* mqtt_token = "sqW1hsfNqLRAEkym3LKQ";
 
 // Pins
-const int soilSensorPin = 27; // ADC pin pour le capteur d'humidité
+const int soilSensorPin = 26; // ADC pin pour le capteur d'humidité
 const int pumpPin = 18; // GPIO pour la pompe
 
 WiFiClient espClient;
@@ -107,11 +107,20 @@ void loop() {
   }
   client.loop();
 
-  unsigned long now = millis();
+   unsigned long now = millis();
   if (now - lastMsg > 2000) {
     lastMsg = now;
     int sensorValue = analogRead(soilSensorPin);
-    float humidity = map(sensorValue, 0, 4095, 100, 0);
+    int humidity = sensorValue;
+
+    // Check if humidity is below 50% and activate pump if necessary
+    if (humidity < 50) {
+      digitalWrite(pumpPin, HIGH);
+      Serial.println("Pump ON");
+    } else {
+      digitalWrite(pumpPin, LOW);
+      Serial.println("Pump OFF");
+    }
 
     String payload = "{";
     payload += "\"humidity\":";
