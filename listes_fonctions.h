@@ -301,7 +301,7 @@ void ledScenario(){
 
   // on faire un if qui change l'état des led tout les 20% d'humidité. 
    if (moisture<20){
-    fill_solid(led_humi,NUM_LED,CRGB::AliceBlue); // fill solide remplie le ruban sur le nbr de led donné par la couleur donnée, 
+    fill_solid(led_humi,NUM_LED,CRGB::AliceBlue); // fil solide remplie le ruban sur le nombre de led donné par la couleur donnée, 
     FastLED.show();// Permet de faire afficher ce changement. 
     // tout les autres boucle sur l'humidité et la temperature fonctionne sur le même principe (avec l'autre ruban pour la temperature.)
     
@@ -322,12 +322,12 @@ void ledScenario(){
     fill_solid(led_humi,NUM_LED,CRGB::DarkBlue);
     FastLED.show();
   }
-  //Grand if avec elif qui montent en temperature
+  //changement de la couleur de la led en fonction de la température
   if (temp<30){
     fill_solid(led_temp,NUM_LED,CRGB::Yellow);
     FastLED.show();
   }
-  else{
+  else {
     fill_solid(led_temp,NUM_LED,CRGB::Red);
     FastLED.show();
   }
