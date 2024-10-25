@@ -183,92 +183,115 @@ String httpGETRequest(const char* serverName) {
 }
 // ------------------------------------------------------------------------------
 void getInfoAPI() {
-  if ((millis() - lastTime) > timerDelay) { // si le délai entre demande API est dépassé
-    // On teste le status du WiFi.
+  if ((millis() - lastTime) > timerDelay) { // si le délai entre demandes API est dépassé
     if (WiFi.status() == WL_CONNECTED) {
-      jsonBuffer = httpGETRequest(url.c_str()); // on met dans le buffer la réponse si on se connecte à l'API
-      Serial.println(jsonBuffer); // on l'imprime
+      jsonBuffer = httpGETRequest(url.c_str()); // on met dans le buffer la réponse de l'API
+      Serial.println(jsonBuffer); // on l'imprime dans le moniteur série
       
-      DynamicJsonDocument myObject(1024); 
+      DynamicJsonDocument myObject(2048); 
       deserializeJson(myObject, jsonBuffer);
 
-      // Extraction et affichage des descriptions de la météo pour chaque jour
-
-
-
-      // Probabilités de pluie pour chaque jour
-      float p_J1 = 1.0;
+      // Variables pour les probabilités de pluie, température et vitesse du vent pour chaque jour
+      float p_J1 = 1.0, windSum_J1 = 0, tempSum_J1 = 0;
       for (int i = 0; i < 8; i++) {
         float buff = float(myObject["list"][i]["pop"]);
-        p_J1 = p_J1 * (1 - buff);
-        temp_J1 = float(myObject["list"][i]["main"]["temp"]);
+        p_J1 *= (1 - buff);
+        tempSum_J1 += float(myObject["list"][i]["main"]["temp"]);
+        windSum_J1 += float(myObject["list"][i]["wind"]["speed"]) * 3.6; // Conversion en km/h
       }
-      float p_J2 = 1.0;
+      pop_J1 = (1 - p_J1) * 100;
+      temp_J1 = (tempSum_J1 / 8) - 273.15; // Conversion en Celsius
+      wind_J1 = windSum_J1 / 8;  // Vitesse moyenne du vent pour le jour 1
+
+      float p_J2 = 1.0, windSum_J2 = 0, tempSum_J2 = 0;
       for (int i = 8; i < 16; i++) {
         float buff = float(myObject["list"][i]["pop"]);
-        p_J2 = p_J2 * (1 - buff);
-        temp_J2 = float(myObject["list"][i]["main"]["temp"]);
+        p_J2 *= (1 - buff);
+        tempSum_J2 += float(myObject["list"][i]["main"]["temp"]);
+        windSum_J2 += float(myObject["list"][i]["wind"]["speed"]) * 3.6; // Conversion en km/h
       }
-      float p_J3 = 1.0;
+      pop_J2 = (1 - p_J2) * 100;
+      temp_J2 = (tempSum_J2 / 8) - 273.15;
+      wind_J2 = windSum_J2 / 8;
+
+      float p_J3 = 1.0, windSum_J3 = 0, tempSum_J3 = 0;
       for (int i = 16; i < 24; i++) {
         float buff = float(myObject["list"][i]["pop"]);
-        p_J3 = p_J3 * (1 - buff);
-        temp_J3 = float(myObject["list"][i]["main"]["temp"]);
+        p_J3 *= (1 - buff);
+        tempSum_J3 += float(myObject["list"][i]["main"]["temp"]);
+        windSum_J3 += float(myObject["list"][i]["wind"]["speed"]) * 3.6; // Conversion en km/h
       }
-      float p_J4 = 1.0;
+      pop_J3 = (1 - p_J3) * 100;
+      temp_J3 = (tempSum_J3 / 8) - 273.15;
+      wind_J3 = windSum_J3 / 8;
+
+      float p_J4 = 1.0, windSum_J4 = 0, tempSum_J4 = 0;
       for (int i = 24; i < 32; i++) {
         float buff = float(myObject["list"][i]["pop"]);
-        p_J4 = p_J4 * (1 - buff);
-        temp_J4 = float(myObject["list"][i]["main"]["temp"]);
+        p_J4 *= (1 - buff);
+        tempSum_J4 += float(myObject["list"][i]["main"]["temp"]);
+        windSum_J4 += float(myObject["list"][i]["wind"]["speed"]) * 3.6; // Conversion en km/h
       }
-      float p_J5 = 1.0;
+      pop_J4 = (1 - p_J4) * 100;
+      temp_J4 = (tempSum_J4 / 8) - 273.15;
+      wind_J4 = windSum_J4 / 8;
+
+      float p_J5 = 1.0, windSum_J5 = 0, tempSum_J5 = 0;
       for (int i = 32; i < 40; i++) {
         float buff = float(myObject["list"][i]["pop"]);
-        p_J5 = p_J5 * (1 - buff);
-        temp_J5 = float(myObject["list"][i]["main"]["temp"]);
+        p_J5 *= (1 - buff);
+        tempSum_J5 += float(myObject["list"][i]["main"]["temp"]);
+        windSum_J5 += float(myObject["list"][i]["wind"]["speed"]) * 3.6; // Conversion en km/h
       }
-
-      // Calcul des pourcentages de pluie pour chaque jour
-      pop_J1 = (1 - p_J1) * 100;
-      pop_J2 = (1 - p_J2) * 100; 
-      pop_J3 = (1 - p_J3) * 100; 
-      pop_J4 = (1 - p_J4) * 100; 
       pop_J5 = (1 - p_J5) * 100;
+      temp_J5 = (tempSum_J5 / 8) - 273.15;
+      wind_J5 = windSum_J5 / 8;
 
-      temp_J1 = temp_J1-273.15;
-      temp_J2 = temp_J2-273.15;  
-      temp_J3 = temp_J3-273.15;  
-      temp_J4 = temp_J4-273.15;  
-      temp_J5 = temp_J5-273.15;    
-
+      // Affichage des données dans le moniteur série
       Serial.print("POP Jour 1: ");
       Serial.println(pop_J1);
+      Serial.print("Température Jour 1: ");
+      Serial.println(temp_J1);
+      Serial.print("Vitesse du vent Jour 1 (km/h): ");
+      Serial.println(wind_J1);
+
       Serial.print("POP Jour 2: ");
       Serial.println(pop_J2);
+      Serial.print("Température Jour 2: ");
+      Serial.println(temp_J2);
+      Serial.print("Vitesse du vent Jour 2 (km/h): ");
+      Serial.println(wind_J2);
+
       Serial.print("POP Jour 3: ");
       Serial.println(pop_J3);
+      Serial.print("Température Jour 3: ");
+      Serial.println(temp_J3);
+      Serial.print("Vitesse du vent Jour 3 (km/h): ");
+      Serial.println(wind_J3);
+
       Serial.print("POP Jour 4: ");
       Serial.println(pop_J4);
+      Serial.print("Température Jour 4: ");
+      Serial.println(temp_J4);
+      Serial.print("Vitesse du vent Jour 4 (km/h): ");
+      Serial.println(wind_J4);
+
       Serial.print("POP Jour 5: ");
       Serial.println(pop_J5);
-
-      Serial.print("Temperature Jour 1: ");
-      Serial.println(temp_J1);
-      Serial.print("Temperature Jour 2: ");
-      Serial.println(temp_J2);
-      Serial.print("Temperature Jour 3: ");
-      Serial.println(temp_J3);
-      Serial.print("Temperature Jour 4: ");
-      Serial.println(temp_J4);
-      Serial.print("Temperature Jour 5: ");
+      Serial.print("Température Jour 5: ");
       Serial.println(temp_J5);
+      Serial.print("Vitesse du vent Jour 5 (km/h): ");
+      Serial.println(wind_J5);
 
     } else {
-      Serial.println("WiFi Disconnected"); // si le wifi n'est pas connecté, on envoie un message d'erreur.
+      Serial.println("WiFi Disconnected");
     }
-    lastTime = millis(); // on réinitialise le lastTime auquel on a pris les données de l'API.
+    lastTime = millis(); // Réinitialisation de lastTime
   }
 }
+
+
+
 
 // ------------------------------------------------------------------------------
 void ledScenario(){
