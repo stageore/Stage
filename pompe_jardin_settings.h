@@ -85,6 +85,12 @@ float temp_J3;
 float temp_J4;
 float temp_J5;
 
+float wind_J1;
+float wind_J2;
+float wind_J3;
+float wind_J4;
+float wind_J5;
+
 
 // temps depuis le dernier call de l'API
 unsigned long lastTime = 0;
