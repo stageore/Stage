@@ -98,7 +98,13 @@ Serial.println(moisture);
     tb.sendTelemetryData("temperature_jour_3",temp_J3);
     tb.sendTelemetryData("temperature_jour_4",temp_J4);
     tb.sendTelemetryData("temperature_jour_5",temp_J5);
-    // et comme attribut pour celle lié au 
+    //On envoie alors les valeurs de télémétrie de la moyenne de la vittesse du vent fournie par l'API
+    tb.sendTelemetryData("vitesse_moyenne_vent_J1",wind_J1);
+    tb.sendTelemetryData("vitesse_moyenne_vent_J2",wind_J2);
+    tb.sendTelemetryData("vitesse_moyenne_vent_J3",wind_J3);
+    tb.sendTelemetryData("vitesse_moyenne_vent_J4",wind_J4);
+    tb.sendTelemetryData("vitesse_moyenne_vent_J5",wind_J5);
+    // et comme attribut pour celle lié à la connexion au réseau
     tb.sendAttributeData("rssi", WiFi.RSSI());
     tb.sendAttributeData("channel", WiFi.channel());
     tb.sendAttributeData("bssid", WiFi.BSSIDstr().c_str());
