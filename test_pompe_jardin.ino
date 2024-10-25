@@ -44,7 +44,7 @@ Serial.print("Humi :");
 Serial.println(moisture);
   if (btn_auto==true){// si mode automatique actif 
     Serial.println("mode auto actif");
-    if (moisture<=humidityRate){ // et que l'humidité est en dessous de la limite fixé dans settings. 
+    if ((moisture <= humidityRate) && (temp_J1 < 30)) { // l'humidité est en dessous de la limite fixé dans settings et la température est en dessous de 30°. 
       Serial.println("arrosage automatique en cours ");
       digitalWrite(relayPin,HIGH); /// on allume l'arrosage pour une durée  t_arro
       delay(t_arro);
@@ -92,6 +92,12 @@ Serial.println(moisture);
     tb.sendTelemetryData("pluie_jour_3",pop_J3);
     tb.sendTelemetryData("pluie_jour_4",pop_J4);
     tb.sendTelemetryData("pluie_jour_5",pop_J5);
+    // On envoie alors les valeurs de télémétrie de la température envoyé par l'API
+    tb.sendTelemetryData("temperature_jour_1",temp_J1);
+    tb.sendTelemetryData("temperature_jour_2",temp_J2);
+    tb.sendTelemetryData("temperature_jour_3",temp_J3);
+    tb.sendTelemetryData("temperature_jour_4",temp_J4);
+    tb.sendTelemetryData("temperature_jour_5",temp_J5);
     // et comme attribut pour celle lié au 
     tb.sendAttributeData("rssi", WiFi.RSSI());
     tb.sendAttributeData("channel", WiFi.channel());
