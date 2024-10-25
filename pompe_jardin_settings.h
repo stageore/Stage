@@ -79,6 +79,13 @@ float pop_J4=0.0;
 float p_J5= 1.0;
 float pop_J5=0.0;
 
+float temp_J1; //définition température fournie par l'API
+float temp_J2;
+float temp_J3;
+float temp_J4;
+float temp_J5;
+
+
 // temps depuis le dernier call de l'API
 unsigned long lastTime = 0;
 // temps de  delay entre les requete API.
