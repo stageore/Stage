@@ -182,67 +182,94 @@ String httpGETRequest(const char* serverName) {
   return payload;
 }
 // ------------------------------------------------------------------------------
-void getInfoAPI(){
- if ((millis() - lastTime) > timerDelay) {// si le  delay entre demande api est dépasser
-    // On teste le status du WiFi. 
-    if(WiFi.status()== WL_CONNECTED){     
-      jsonBuffer = httpGETRequest(url.c_str()); // on met dans le buffer la réponse si on connecte à l'API
-      Serial.println(jsonBuffer);// on le print 
-      
+void getInfoAPI() {
+  if ((millis() - lastTime) > timerDelay) { // si le délai entre demande API est dépassé
+    // On teste le status du WiFi.
+    if (WiFi.status() == WL_CONNECTED) {
+      jsonBuffer = httpGETRequest(url.c_str()); // on met dans le buffer la réponse si on se connecte à l'API
+      Serial.println(jsonBuffer); // on l'imprime
       
       DynamicJsonDocument myObject(1024); 
       deserializeJson(myObject, jsonBuffer);
 
-      float p_J1=1.0; // Notre proba de  non pluie est à priori 1. 
-      Serial.println("J1");
-      for (int i=0;i<8;i++){
-        float buff=float(myObject["list"][i]["pop"]);// On prend la proba de pluie venu de l'API à l'étape en cours. 
-        p_J1=p_J1*(1-buff);// La proba de non pluie sur ce jour là correspond à la proba de non pluie jusque là  multiplié par 1- la proba de pluie à cette étape. 
-        Serial.println(p_J1);
+      // Extraction et affichage des descriptions de la météo pour chaque jour
+
+
+
+      // Probabilités de pluie pour chaque jour
+      float p_J1 = 1.0;
+      for (int i = 0; i < 8; i++) {
+        float buff = float(myObject["list"][i]["pop"]);
+        p_J1 = p_J1 * (1 - buff);
+        temp_J1 = float(myObject["list"][i]["main"]["temp"]);
       }
-      Serial.println("J2");
-      float p_J2=1.0;
-      for (int i=8;i<16;i++){
-        float buff=float(myObject["list"][i]["pop"]);
-        p_J2=p_J2*(1-buff);
-        Serial.println(p_J2);
+      float p_J2 = 1.0;
+      for (int i = 8; i < 16; i++) {
+        float buff = float(myObject["list"][i]["pop"]);
+        p_J2 = p_J2 * (1 - buff);
+        temp_J2 = float(myObject["list"][i]["main"]["temp"]);
       }
-      Serial.println("J3");
-      float p_J3=1.0;
-      for (int i=16;i<24;i++){
-        float buff=float(myObject["list"][i]["pop"]);
-        p_J3=p_J3*(1-buff);
-        Serial.println(p_J3);
+      float p_J3 = 1.0;
+      for (int i = 16; i < 24; i++) {
+        float buff = float(myObject["list"][i]["pop"]);
+        p_J3 = p_J3 * (1 - buff);
+        temp_J3 = float(myObject["list"][i]["main"]["temp"]);
       }
-      Serial.println("J4");
-      float p_J4=1.0;
-      for (int i=24;i<32;i++){
-        float buff=float(myObject["list"][i]["pop"]);
-        p_J4=p_J4*(1-buff);
-        Serial.println(p_J4);
+      float p_J4 = 1.0;
+      for (int i = 24; i < 32; i++) {
+        float buff = float(myObject["list"][i]["pop"]);
+        p_J4 = p_J4 * (1 - buff);
+        temp_J4 = float(myObject["list"][i]["main"]["temp"]);
       }
-      Serial.println("J5");
-      float p_J5=1.0;
-      for (int i=32;i<40;i++){
-        float buff=float(myObject["list"][i]["pop"]);
-        p_J5=p_J5*(1-buff);
-        Serial.println(p_J5);
+      float p_J5 = 1.0;
+      for (int i = 32; i < 40; i++) {
+        float buff = float(myObject["list"][i]["pop"]);
+        p_J5 = p_J5 * (1 - buff);
+        temp_J5 = float(myObject["list"][i]["main"]["temp"]);
       }
-      // Une fois qu'on a toute nos proba de non plus chaque jour on fais  1- proba pour avoir les proba de pluie sur les journées, et on les  transforme en % par soucis de lisibilité sur TB. 
-      pop_J1= (1-p_J1)*100;
-      pop_J2= (1-p_J2)*100; 
-      pop_J3= (1-p_J3)*100; 
-      pop_J4= (1-p_J4)*100; 
-      pop_J5= (1-p_J5)*100;  
-      Serial.print("POP sur  24h: ");
+
+      // Calcul des pourcentages de pluie pour chaque jour
+      pop_J1 = (1 - p_J1) * 100;
+      pop_J2 = (1 - p_J2) * 100; 
+      pop_J3 = (1 - p_J3) * 100; 
+      pop_J4 = (1 - p_J4) * 100; 
+      pop_J5 = (1 - p_J5) * 100;
+
+      temp_J1 = temp_J1-273.15;
+      temp_J2 = temp_J2-273.15;  
+      temp_J3 = temp_J3-273.15;  
+      temp_J4 = temp_J4-273.15;  
+      temp_J5 = temp_J5-273.15;    
+
+      Serial.print("POP Jour 1: ");
       Serial.println(pop_J1);
+      Serial.print("POP Jour 2: ");
+      Serial.println(pop_J2);
+      Serial.print("POP Jour 3: ");
+      Serial.println(pop_J3);
+      Serial.print("POP Jour 4: ");
+      Serial.println(pop_J4);
+      Serial.print("POP Jour 5: ");
+      Serial.println(pop_J5);
+
+      Serial.print("Temperature Jour 1: ");
+      Serial.println(temp_J1);
+      Serial.print("Temperature Jour 2: ");
+      Serial.println(temp_J2);
+      Serial.print("Temperature Jour 3: ");
+      Serial.println(temp_J3);
+      Serial.print("Temperature Jour 4: ");
+      Serial.println(temp_J4);
+      Serial.print("Temperature Jour 5: ");
+      Serial.println(temp_J5);
+
+    } else {
+      Serial.println("WiFi Disconnected"); // si le wifi n'est pas connecté, on envoie un message d'erreur.
     }
-    else {
-      Serial.println("WiFi Disconnected"); // si le wif est pas  connecté on  envoie un msg d'erreur.
-    }
-    lastTime = millis(); // on reset le lasttime auquel on a pris les donnée de l'API. 
+    lastTime = millis(); // on réinitialise le lastTime auquel on a pris les données de l'API.
   }
 }
+
 // ------------------------------------------------------------------------------
 void ledScenario(){
   // On redéfinie nos moisture et  temperature  en début de fonction. 
